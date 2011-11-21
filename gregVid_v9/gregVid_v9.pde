@@ -10,11 +10,17 @@ this is supposed to:
  
  * plug in a hi-res webcamera to a laptop
  * run a script that lets me preview the shot
- * somehow let me draw a polygonal shape to define a "region"
- * somehow let me set a threshold-of-change that will, within the
- region, trigger the sound
- * somehow let me select sounds from a folder of sounds
- 
+ * let me draw a polygonal shape to define a "region"
+ * let me set a threshold-of-change that will, within the
+ * region, trigger the sound
+ * let me drop sounds into each region
+ * set an inactivity threshold...after this time we set all sounds to "not played"
+ * From Greg:
+ * People entering the area should trigger the sound, which will play in its entirety.
+ * Ideally (and tell me if these are complicated), the sound would play through, and if
+ * people are still in the area, it will not play again until people exit completely
+ * and a new group arrives. If people leave before the sound file has been played in
+ * its entirety, it would fade out, say 45 seconds after they leave.
  */
 
 ControlP5 controlP5;
