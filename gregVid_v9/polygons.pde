@@ -8,6 +8,7 @@ class Poly extends java.awt.Polygon {
   Minim m;
   AudioPlayer player;
   MyDropListener dl;
+  boolean didWePlay = false; // this keeps track of whether we've already played the sound
 
   public Poly(int[] x,int[] y, int n, PApplet parent) {
     //call the java.awt.Polygon constructor
