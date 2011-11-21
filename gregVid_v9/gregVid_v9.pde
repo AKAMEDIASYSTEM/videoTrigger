@@ -123,10 +123,13 @@ void draw() {
             if (presenceSum > motionThreshold) {
               // fire an event saying which polygon had movement
               println("We got one in polygon "+j+" motionThreshold is "+motionThreshold);
+              // thisPoly.trigger(); // generic trigger statement for the poly
               thisPoly.play();
               // reset some values
               keyPressed();  // this resets the background 
               thisPoly.isActive = true; // this lets us draw the polygon correctly
+            } else {
+             thisPoly.noAction(); // tell the poly that action has stopped 
             }
             // Render the difference image to the screen
             // pixels[i] = color(diffR, diffG, diffB);

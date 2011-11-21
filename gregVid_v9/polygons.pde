@@ -22,7 +22,6 @@ class Poly extends java.awt.Polygon {
     super();
     //create sound for this Poly
     m = new Minim(parent);
-    player.addEffect(fadeEffect);
   }
 
   public Poly() {
@@ -48,6 +47,10 @@ class Poly extends java.awt.Polygon {
       player.play();
       } else println("already playing!");
     }
+  }
+  
+  void noAction(){
+   // triggered when the poly *doesn't* have action 
   }
 
   //  void dropEvent(DropEvent theDropEvent) {
