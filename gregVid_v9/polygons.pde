@@ -82,13 +82,23 @@ class Poly extends java.awt.Polygon {
           didWePlay = true; // remember that we played it
         } 
         else { // we're already playing
+        // nothing to do?
         }
       }
     }
   }
 
   void noAction() {
-    // nothing
+    // nothing is moving
+    // increment some sort of counter per frame to count to timeoutThreshold seconds
+    
+    
   }
+  
+  
+  
+  
+  
+  
 } // end of Poly class
 
