@@ -9,6 +9,7 @@ class Poly extends java.awt.Polygon {
   AudioPlayer player;
   MyDropListener dl;
   boolean didWePlay = false; // this keeps track of whether we've already played the sound
+  boolean isActive = false;
 
   public Poly(int[] x,int[] y, int n, PApplet parent) {
     //call the java.awt.Polygon constructor
@@ -43,19 +44,12 @@ class Poly extends java.awt.Polygon {
   void play() {
     // play the sound, if any
     if(player != null) {
-      if(!player.isPlaying()){
-      player.play();
-      } else println("already playing!");
+      if(!player.isPlaying()) {
+        player.play();
+      } 
+      else println("already playing!");
     }
   }
-  
-  void noAction(){
-   // triggered when the poly *doesn't* have action 
-  }
-
-  //  void dropEvent(DropEvent theDropEvent) {
-  //
-  //  }
 
   void closeIt(SDrop drop) { //close off the polygon and make it ready to accept a sound
     //println(xpoints[0]+", "+ypoints[0]);
@@ -78,6 +72,23 @@ class Poly extends java.awt.Polygon {
     }
   }
 
-  boolean isActive = false;
-}
+
+
+  void trigger() { // generic method to work on Greg's play logic
+    if(player != null) {
+      if(!player.isPlaying()) {
+        if(!didWePlay) { // if we haven't already played
+          player.play(); // play the sound
+          didWePlay = true; // remember that we played it
+        } 
+        else { // we're already playing
+        }
+      }
+    }
+  }
+
+  void noAction() {
+    // nothing
+  }
+} // end of Poly class
 
