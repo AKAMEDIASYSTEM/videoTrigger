@@ -73,7 +73,7 @@ void setup()
   loadPixels();
 
   // set up DataOut object; requires URL of the EEML you are updating, and your Pachube API key   
-  dOut = new DataOut(this, "http://api.pachube.com/v1/feeds/40757.xml", "ud3sOHlUcXkLMORdbGvaO0dB6pveZKD1492VEx0IK1Q");
+  dOut = new DataOut(this, "http://api.pachube.com/v1/feeds/YOUR_FEED_ID_HERE.xml", "YOUR_API_KEY_HERE");
 }
 
 void draw() {
