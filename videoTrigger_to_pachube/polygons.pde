@@ -15,9 +15,9 @@ class Poly extends java.awt.Polygon {
 
   public Poly(PApplet parent) {
     super();
-
-    dOut.addData(polygons.size()+1, "new region two");
-    println("new region two");
+    int k = polygons.size()+1;
+    dOut.addData(k, "Region "+k);
+    println("Region "+k);
   }
 
   public Poly() {
@@ -29,11 +29,11 @@ class Poly extends java.awt.Polygon {
   }
 
 
-  void play() {
-
+  void trigger() {
     // pachube trigger
-    println("ready to POST: "+this.getIndex());
-    dOut.update(this.getIndex(), "motion in this region!"); // update the datastream 
+    int g = 1+ this.getIndex();
+    println("ready to POST: "+g);
+    dOut.update(g-1, "Motion in region "+g); // update the datastream 
     int response = dOut.updatePachube(); // updatePachube() updates by an authenticated PUT HTTP request
     println(response); // should be 200 if successful; 401 if unauthorized; 404 if feed doesn't exist
   }
@@ -49,19 +49,11 @@ class Poly extends java.awt.Polygon {
       vertex(xpoints[i], ypoints[i]);
     }
     endShape(CLOSE);
-
   }
 
-
-
-  void trigger() { // generic method to work on Greg's play logic
-    // put whatever you want in here!
+  void noAction() {
+    // nothing is moving
+    // increment some sort of counter per frame to count to timeoutThreshold seconds
   }
-
-
-void noAction() {
-  // nothing is moving
-  // increment some sort of counter per frame to count to timeoutThreshold seconds
-}
 } // end of Poly class
 

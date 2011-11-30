@@ -41,6 +41,8 @@ Poly currentPoly;
 public int pointThreshold = 5; // the max distance between points to make them "snap" together
 public int motionThreshold = 200;
 public int checkBoxOffset = 0; // a cheat to stop adding the first poly point when Draw is clicked
+public String API_KEY = "get your own!";
+public String FEED_ID = "feedid.xml"; //note that this is not just the feed number but also the ".xml" suffix!
 
 
 void setup() 
@@ -73,7 +75,7 @@ void setup()
   loadPixels();
 
   // set up DataOut object; requires URL of the EEML you are updating, and your Pachube API key   
-  dOut = new DataOut(this, "http://api.pachube.com/v1/feeds/YOUR_FEED_ID_HERE.xml", "YOUR_API_KEY_HERE");
+  dOut = new DataOut(this, "http://api.pachube.com/v1/feeds/"+FEED_ID, API_KEY);
 }
 
 void draw() {
@@ -119,7 +121,7 @@ void draw() {
               // fire an event saying which polygon had movement
               println("We got one in polygon "+j+" motionThreshold is "+motionThreshold);
               // thisPoly.trigger(); // generic trigger statement for the poly
-              thisPoly.play();
+              thisPoly.trigger();
               // reset some values
               keyPressed();  // this resets the background 
               thisPoly.isActive = true; // this lets us draw the polygon correctly
