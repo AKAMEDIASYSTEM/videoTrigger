@@ -1,32 +1,35 @@
-import ddf.minim.*;
-import ddf.minim.signals.*;
-import ddf.minim.analysis.*;
-import ddf.minim.effects.*;
-import sojamo.drop.*;
+
 import controlP5.*;
 import processing.video.*;
+import eeml.*;
+
 /*
 this is supposed to:
  
  * plug in a hi-res webcamera to a laptop
  * run a script that lets me preview the shot
- * somehow let me draw a polygonal shape to define a "region"
- * somehow let me set a threshold-of-change that will, within the
- region, trigger the sound
- * somehow let me select sounds from a folder of sounds
- 
+ * let me draw a polygonal shape to define a "region"
+ * let me set a threshold-of-change that will, within the
+ * region, trigger the sound
+ * let me drop sounds into each region
+ * set an inactivity threshold...after this time we set all sounds to "not played"
+ * From Greg:
+ * People entering the area should trigger the sound, which will play in its entirety.
+ * Ideally (and tell me if these are complicated), the sound would play through, and if
+ * people are still in the area, it will not play again until people exit completely
+ * and a new group arrives. If people leave before the sound file has been played in
+ * its entirety, it would fade out, say 45 seconds after they leave.
  */
 
 ControlP5 controlP5;
 CheckBox checkbox;
 Capture video;
-AudioPlayer player;
-Minim minim;
-SDrop drop;
-MyDropListener m;
+DataOut dOut;
+float lastUpdate;
 
 public int numPixels;
 int[] backgroundPixels;
+public float multiplier = 1;
 
 public int[] inputs = new int[2];
 public int controlBackground = color(0x97FFFF);
@@ -58,9 +61,6 @@ void setup()
 
   // containers setup
   polygons = new ArrayList();
-  drop = new SDrop(this);
-  //  m = new MyDropListener();
-  //  drop.addDropListener(m);
 
   // video setup
   println(Capture.list());
@@ -71,6 +71,9 @@ void setup()
   backgroundPixels = new int[numPixels];
   // Make the pixels[] array available for direct manipulation
   loadPixels();
+
+  // set up DataOut object; requires URL of the EEML you are updating, and your Pachube API key   
+  dOut = new DataOut(this, "http://api.pachube.com/v1/feeds/40757.xml", "ud3sOHlUcXkLMORdbGvaO0dB6pveZKD1492VEx0IK1Q");
 }
 
 void draw() {
@@ -115,10 +118,14 @@ void draw() {
             if (presenceSum > motionThreshold) {
               // fire an event saying which polygon had movement
               println("We got one in polygon "+j+" motionThreshold is "+motionThreshold);
+              // thisPoly.trigger(); // generic trigger statement for the poly
               thisPoly.play();
               // reset some values
               keyPressed();  // this resets the background 
               thisPoly.isActive = true; // this lets us draw the polygon correctly
+            } 
+            else {
+              thisPoly.noAction(); // tell the poly that action has stopped
             }
             // Render the difference image to the screen
             // pixels[i] = color(diffR, diffG, diffB);
@@ -150,11 +157,11 @@ void draw() {
     // draw stuff
 
     // draw circles around origins if we're near them
-    if(!polygons.isEmpty()) {
+    if (!polygons.isEmpty()) {
       Poly eachPoly = new Poly();
       eachPoly = (Poly)polygons.get(polygons.size()-1);
-      if(dist(eachPoly.xpoints[0],eachPoly.ypoints[0],mouseX,mouseY)<=pointThreshold) {
-        ellipse(eachPoly.xpoints[0],eachPoly.ypoints[0],pointThreshold*2,pointThreshold*2);  // draw circle at origin
+      if (dist(eachPoly.xpoints[0], eachPoly.ypoints[0], mouseX, mouseY)<=pointThreshold) {
+        ellipse(eachPoly.xpoints[0], eachPoly.ypoints[0], pointThreshold*2, pointThreshold*2);  // draw circle at origin
       }
     }
 
@@ -196,7 +203,6 @@ public boolean isLastPoint(Poly p) {
     // if the dist is less than threshold, make last points = first points and close shape
     p.xpoints[p.npoints-1] = p.xpoints[0];
     p.ypoints[p.npoints-1] = p.ypoints[0];
-    p.closeIt(drop);
     println("we closed a polygon");
     return true;
   } 
@@ -215,7 +221,6 @@ void stop() {
   // safely stop all the audio players
   for (int j=0;j<polygons.size();j++) {
     Poly thisPoly = (Poly)polygons.get(j);
-    thisPoly.m.stop();
   }
   super.stop();
   // go through every polygon and if it has a sound file, stop it properly 
