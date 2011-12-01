@@ -6,6 +6,7 @@
 class Poly extends java.awt.Polygon {
 
   boolean isActive = false;
+  int emptyFrames = 0;
 
   public Poly(int[] x, int[] y, int n, PApplet parent) {
     //call the java.awt.Polygon constructor
@@ -32,10 +33,12 @@ class Poly extends java.awt.Polygon {
   void trigger() {
     // pachube trigger
     int g = 1+ this.getIndex();
-    println("ready to POST: "+g);
-    dOut.update(g-1, "Motion in region "+g); // update the datastream 
+    println("ready to POST action to: "+g);
+    //dOut.update(g-1, "Motion in region "+g); // update the datastream
+    dOut.update(g-1, 1); // update the datastream 
     int response = dOut.updatePachube(); // updatePachube() updates by an authenticated PUT HTTP request
     println(response); // should be 200 if successful; 401 if unauthorized; 404 if feed doesn't exist
+    emptyFrames = 0;
   }
 
 
@@ -54,6 +57,17 @@ class Poly extends java.awt.Polygon {
   void noAction() {
     // nothing is moving
     // increment some sort of counter per frame to count to timeoutThreshold seconds
+    // pachube trigger
+    emptyFrames++;
+    if(emptyFrames>relaxThreshold) { // if we're inactive for relaxThreshold frames, post to pachube
+      int g = 1+ this.getIndex();
+      println("hit "+emptyFrames+" ready to POST noAction to: "+g);
+      //dOut.update(g-1, "Motion in region "+g); // update the datastream
+      dOut.update(g-1, 0); // update the datastream 
+      int response = dOut.updatePachube(); // updatePachube() updates by an authenticated PUT HTTP request
+      println(response); // should be 200 if successful; 401 if unauthorized; 404 if feed doesn't exist
+      emptyFrames = 0;
+    }
   }
 } // end of Poly class
 

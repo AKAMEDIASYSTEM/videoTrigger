@@ -40,9 +40,10 @@ Poly thisPoly;
 Poly currentPoly;
 public int pointThreshold = 5; // the max distance between points to make them "snap" together
 public int motionThreshold = 200;
+public int relaxThreshold = 10000000; // number of inactive frames before we trigger "poly.noAction"
 public int checkBoxOffset = 0; // a cheat to stop adding the first poly point when Draw is clicked
 public String API_KEY = "get your own!";
-public String FEED_ID = "feedid.xml"; //note that this is not just the feed number but also the ".xml" suffix!
+public String FEED_ID = "feednumber.xml"; //note that this is not just the feed number but also the ".xml" suffix!
 
 
 void setup() 
@@ -122,9 +123,9 @@ void draw() {
               println("We got one in polygon "+j+" motionThreshold is "+motionThreshold);
               // thisPoly.trigger(); // generic trigger statement for the poly
               thisPoly.trigger();
-              // reset some values
-              keyPressed();  // this resets the background 
               thisPoly.isActive = true; // this lets us draw the polygon correctly
+              // reset some values
+              keyPressed();  // this resets the background
             } 
             else {
               thisPoly.noAction(); // tell the poly that action has stopped
