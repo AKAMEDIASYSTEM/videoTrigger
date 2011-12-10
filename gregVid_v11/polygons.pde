@@ -101,7 +101,7 @@ class Poly extends java.awt.Polygon {
       int g = this.getIndex();
       println("hit "+emptyFrames+" noAction in: "+g);
       if (player!=null) {
-        if(player.effectCount()<5) {
+        if(player.effectCount()<FADE_STEPS) {
           fadeEffect = new FaderEffect();
           player.addEffect(fadeEffect); // add the fade-out effect to the audio
           println("added another fadeout effect, total is "+player.effectCount());

@@ -31,6 +31,7 @@ SDrop drop;
 
 public int numPixels;
 int[] backgroundPixels;
+public int FADE_STEPS = 5; // the number of times we halve the volume to fade gracefully.
 public float MULTIPLIER_DEFAULT = 0.5;
 public float multiplier = 0.5; // halves the volume of the player...we cahin this to get semi-exponential fade-out
 
@@ -44,7 +45,7 @@ Poly currentPoly;
 public int pointThreshold = 5; // the max distance between points to make them "snap" together
 public int motionThreshold = 200;
 public int relaxThreshold = 24*10; // number of inactive frames before we trigger "poly.noAction"
-// 24 frames/sec *
+// 24 frames/sec * number of seconds we want to wait before halving the volume
 public int checkBoxOffset = 0; // a cheat to stop adding the first poly point when Draw is clicked
 
 
