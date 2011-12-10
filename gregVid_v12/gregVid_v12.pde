@@ -85,7 +85,7 @@ void setup()
 
 void draw() {
 
-  fill(0, 255, 128, 196);
+  fill(0, 255, 128, 128);
   stroke(0, 255, 255);
 
   if (video.available()) {
@@ -118,51 +118,65 @@ void draw() {
 
         // is the pixel in a polygon?
         for (int j=0;j<polygons.size();j++) {
+
           Poly thisPoly = (Poly)polygons.get(j);
-          thisPoly.isActive = (thisPoly.isActive || false);
+
           float[] tempXY = pixelToXY(i);
+
           if (thisPoly.contains(tempXY[0], tempXY[1])) {  // if the pixel is in a polygon
+
             if (presenceSum > motionThreshold) { // if we detect motion in the polygon
               println("Motion in polygon "+j);
-              thisPoly.trigger(); // generic trigger statement for the poly
-              // reset some values
-              keyPressed();  // this resets the background 
-              thisPoly.isActive = true; // this lets us draw the polygon correctly
-            } 
-            else {
-              thisPoly.noAction(); // tell the poly that action has stopped
+              thisPoly.isActive = true;
+              keyPressed();  // this resets the background
             }
+            else {
+              thisPoly.isActive = (false || thisPoly.isActive);
+              //thisPoly.isActive = false;
+            }
+
             // Render the difference image to the screen
             // pixels[i] = color(diffR, diffG, diffB);
             // The following line does the same thing much faster, but is more technical
             pixels[i] = 0xFF000000 | (diffR << 16) | (diffG << 8) | diffB;
-          }
-          else { // ie, the pixel is not in thisPoly
-
-            //  pixels[i]=currColor;
-          }
-        }
-      }
+          } // end of is-pixel-in-polygon loop
+        } // end of go-through-all-the-polygons loop
+      } // end of are-we-in-analyze-mode loop
       pixels[i]=currColor;
-    }
+    } // end of pixel-diff code
+
     updatePixels(); // Notify that the pixels[] array has changed
 
+    // now go through all polygons and draw them
     for (int i=0; i<polygons.size(); i++) {
       Poly eachPoly = new Poly();
       eachPoly = (Poly)polygons.get(i);
+
+      if (inputs[1]==1) {
+        //println("polygon "+i+" isActive= "+eachPoly.isActive);
+      }
+
       if (eachPoly.isActive) {
+        if (inputs[1]==1) {
+          eachPoly.trigger();
+          //println("trigger for "+i);
+          eachPoly.isActive = false; // reset isActive every Frame
+        }
         fill(255, 0, 0, 64);
-      } 
+      }
       else {
-        fill(0, 255, 128, 196);
+        if (inputs[1]==1) {
+          eachPoly.noAction();
+          //println("noAction for "+i);
+        }
+        fill(0, 255, 128, 128);
       }
       eachPoly.drawMe();
-      fill(0, 255, 128, 196); // reset fill for next frame?
+      fill(0, 255, 128, 128); // reset fill for next frame?
     }
 
     // draw stuff
-
-    // draw circles around origins if we're near them
+    // draw circles around origins if we're near them - so they only appear when you're OK to click
     if (!polygons.isEmpty()) {
       Poly eachPoly = new Poly();
       eachPoly = (Poly)polygons.get(polygons.size()-1);
@@ -228,6 +242,9 @@ void stop() {
   // safely stop all the audio players
   for (int j=0;j<polygons.size();j++) {
     Poly thisPoly = (Poly)polygons.get(j);
+    if(thisPoly.player!=null) {
+      thisPoly.player.close();
+    }
     thisPoly.m.stop();
   }
   super.stop();
