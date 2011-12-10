@@ -76,7 +76,7 @@ public int pointThreshold = 5; // the max distance between points to make them "
 public int motion_Threshold = 200; // unitless difference threshold, alters motion sensitivity
 public int secondsToWait = 10; // number of seconds to wait before triggering "poly.noAction"
 public float relaxThreshold = 24*secondsToWait; // frames/sec * number of seconds we want to wait before halving the volume
-public float fadeInterval = 24*5; // number of frames to wait between fades
+public float fadeInterval = 24*5; // number of frames to wait between fades (24 frames/sec * number of secs)
 public int FADE_STEPS = 10; // the number of times we scale down the volume to fade gracefully.
 public float fade_Intensity = 0.5f; // halves the volume of the player...we chain this to get semi-exponential fade-out
 
