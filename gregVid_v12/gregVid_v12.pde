@@ -32,24 +32,27 @@ SDrop drop;
 public int numPixels;
 int[] backgroundPixels;
 
-public float multiplier = 0.5; // halves the volume of the player...we cahin this to get semi-exponential fade-out
+
 
 public int[] inputs = new int[2];
 public int controlBackground = color(0x97FFFF);
 public int controlFont = color(0xFF8888);
 public boolean isNewPoly = true;
 public ArrayList polygons;
+public int checkBoxOffset = 0; // a cheat to stop adding the first poly point when Draw is clicked
+public float MULTIPLIER_DEFAULT = 0.5; // default is 0.5, so volume = 0.5* prev volume
 Poly thisPoly;
 Poly currentPoly;
 
 // SOME SETTINGS YOU CAN FUTZ WITH
 public int pointThreshold = 5; // the max distance between points to make them "snap" together
-public int motionThreshold = 200; // unitless difference threshold, alters motion sensitivity
+public int motion_Threshold = 200; // unitless difference threshold, alters motion sensitivity
 public int secondsToWait = 10; // number of seconds to wait before triggering "poly.noAction"
 public float relaxThreshold = 24*secondsToWait; // frames/sec * number of seconds we want to wait before halving the volume
-public int FADE_STEPS = 5; // the number of times we halve the volume to fade gracefully.
-public float MULTIPLIER_DEFAULT = 0.5;
-public int checkBoxOffset = 0; // a cheat to stop adding the first poly point when Draw is clicked
+public float fadeInterval = 24*5; // number of frames to wait between fades
+public int FADE_STEPS = 10; // the number of times we scale down the volume to fade gracefully.
+public float fade_Intensity = 0.5; // halves the volume of the player...we chain this to get semi-exponential fade-out
+
 
 
 void setup() 
@@ -59,7 +62,8 @@ void setup()
 
   // UI setup
   controlP5 = new ControlP5(this);
-  controlP5.addSlider("motionThreshold", 0, 765, 200, 20, 100, 10, 100);
+  controlP5.addSlider("motion_Threshold", 0, 765, 200, 20, 100, 10, 100);
+  controlP5.addSlider("fade_Intensity", 0, 0.99, 0.5, 20, 240, 10, 100);
   checkbox = controlP5.addCheckBox("DrawToggle", 20, 20);
   // make adjustments to the layout of a checkbox.
   checkbox.setColorForeground(controlBackground);
@@ -125,7 +129,7 @@ void draw() {
 
           if (thisPoly.contains(tempXY[0], tempXY[1])) {  // if the pixel is in a polygon
 
-            if (presenceSum > motionThreshold) { // if we detect motion in the polygon
+            if (presenceSum > motion_Threshold) { // if we detect motion in the polygon
               println("Motion in polygon "+j);
               thisPoly.isActive = true;
               keyPressed();  // this resets the background

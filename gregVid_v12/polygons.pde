@@ -10,6 +10,7 @@ class Poly extends java.awt.Polygon {
   MyDropListener dl;
   boolean didWePlay = false; //whether we've already played the sound
   boolean isActive = false; // whether or not there was motion detected this frame
+  boolean fading = false; // whether or not we're in the middle of a fade
   int emptyFrames = 0; // for counting the number of frames for which we've been inactive
 
   public Poly(int[] x, int[] y, int n, PApplet parent) {
@@ -60,18 +61,18 @@ class Poly extends java.awt.Polygon {
   void trigger() { // generic method to work on Greg's play logic
     //this.isActive = true;
     if (player != null) {
-      
-      // we've seen action again, so clear any effects we appended to player
-      if(player.effectCount()>0) {
+
+      if(player.effectCount()>0) {  // we've seen action again, so clear any effects we appended to player
         player.removeEffect(player.effectCount()-1); // remove the last-added effect to (sort of) smoothly fade back up
         println("There are now "+player.effectCount()+" effects in poly "+this.getIndex());
       }
-      
+
       if (!player.isPlaying()) { // if we're not already playing the sound
         if (!didWePlay) { // and if we haven't already played
           player.play(); // play the sound
           didWePlay = true; // remember that we played it
-        } else { // we're already playing
+        } 
+        else { // we're already playing
           // nothing to do?
         }
       }
@@ -80,12 +81,8 @@ class Poly extends java.awt.Polygon {
   }  // end of poly.trigger()
 
   void noAction() {
-    //println("called noAction on "+this.getIndex());
-    // called when nothing is moving
-   // this.isActive = false; // so we can draw the poly correctly
-    if (abs(frameCount-emptyFrames)>relaxThreshold) { // if we're inactive for relaxThreshold frames, do something
-      int g = this.getIndex();
-      println("hit "+emptyFrames+" noAction in: "+g);
+    
+    if(fading && (abs(frameCount-emptyFrames)>fadeInterval)){
       if (player!=null && player.isPlaying()) { // if we're playing a sound
         if(player.effectCount() < FADE_STEPS) { // if we're not done fading out, keep chaining effects
           fadeEffect = new FaderEffect();
@@ -98,8 +95,18 @@ class Poly extends java.awt.Polygon {
           player.rewind();
           println("cleared effects and rewound");
           didWePlay = false; // so we can start up again
+          this.fading = false;
         }
       }
+      emptyFrames = frameCount;
+    }
+    
+    //println("called noAction on "+this.getIndex());
+    // called when nothing is moving
+    // this.isActive = false; // so we can draw the poly correctly
+    if (abs(frameCount-emptyFrames)>relaxThreshold) { // if we're inactive for relaxThreshold frames, do something
+      println("hit "+emptyFrames+" noAction in: "+this.getIndex());
+      fading = true;
       emptyFrames=frameCount; // reset our motion counter after we've done something to force us to wait relaxThreshold more seconds till we repeat
     }
   } // end of poly.noAction()
