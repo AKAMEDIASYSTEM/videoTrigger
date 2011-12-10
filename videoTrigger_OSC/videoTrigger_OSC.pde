@@ -2,6 +2,8 @@
 import sojamo.drop.*;
 import controlP5.*;
 import processing.video.*;
+import oscP5.*;
+import netP5.*;
 /*
 This is a generic script that lets the user:
 
@@ -14,14 +16,12 @@ This is a generic script that lets the user:
 ControlP5 controlP5;
 CheckBox checkbox;
 Capture video;
-
+OscP5 oscP5;
+NetAddress myRemoteLocation;
 SDrop drop;
 
 public int numPixels;
 int[] backgroundPixels;
-
-
-
 public int[] inputs = new int[2];
 public int controlBackground = color(0x97FFFF);
 public int controlFont = color(0xFF8888);
@@ -32,17 +32,15 @@ Poly thisPoly;
 Poly currentPoly;
 
 // SOME SETTINGS YOU CAN FUTZ WITH
+public float customFrameRate = 24.5;
 public int pointThreshold = 5; // the max distance between points to make them "snap" together
 public int motion_Threshold = 200; // unitless difference threshold, alters motion sensitivity
 public int secondsToWait = 10; // number of seconds to wait before triggering "poly.noAction"
-public float relaxThreshold = 24*secondsToWait; // frames/sec * number of seconds we want to wait before halving the volume
-
-
 
 void setup() 
 {
   size(640, 480, P2D);
-  frameRate(24);
+  frameRate(customFrameRate);
 
   // UI setup
   controlP5 = new ControlP5(this);
@@ -58,6 +56,17 @@ void setup()
   // containers setup
   polygons = new ArrayList();
   drop = new SDrop(this);
+  
+  // OSC setup
+    oscP5 = new OscP5(this,12000);
+    /* myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
+   * an ip address and a port number. myRemoteLocation is used as parameter in
+   * oscP5.send() when sending osc packets to another computer, device, 
+   * application. usage see below. for testing purposes the listening port
+   * and the port of the remote location address are the same, hence you will
+   * send messages back to this sketch.
+   */
+  myRemoteLocation = new NetAddress("127.0.0.1",12000);
 
   // video setup
   println(Capture.list());
@@ -113,18 +122,14 @@ void draw() {
           if (thisPoly.contains(tempXY[0], tempXY[1])) {  // if the pixel is in a polygon
 
             if (presenceSum > motion_Threshold) { // if we detect motion in the polygon
-              println("Motion in polygon "+j);
               thisPoly.isActive = true;
               keyPressed();  // this resets the background
             }
             else {
-              thisPoly.isActive = (false || thisPoly.isActive);
-              //thisPoly.isActive = false;
+              thisPoly.isActive = (false || thisPoly.isActive); // only mark false if no other pixels in poly had motion detected
             }
 
             // Render the difference image to the screen
-            // pixels[i] = color(diffR, diffG, diffB);
-            // The following line does the same thing much faster, but is more technical
             pixels[i] = 0xFF000000 | (diffR << 16) | (diffG << 8) | diffB;
           } // end of is-pixel-in-polygon loop
         } // end of go-through-all-the-polygons loop
@@ -213,6 +218,17 @@ void keyPressed() {
   //println("supposedly reset background");
   video.loadPixels();
   arraycopy(video.pixels, backgroundPixels);
+}
+
+/* incoming osc message are forwarded to the oscEvent method. */
+void oscEvent(OscMessage theOscMessage) {
+  /* print the address pattern and the typetag of the received OscMessage */
+  print("### received an osc message.");
+  print(" addrpattern: "+theOscMessage.addrPattern());
+  println(" typetag: "+theOscMessage.typetag());
+  //if(theOscMessage.typetag()=="s"){
+   println(theOscMessage.get(0).stringValue());
+  //}
 }
 
 void stop() {

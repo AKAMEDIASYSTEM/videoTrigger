@@ -32,8 +32,8 @@ class Poly extends java.awt.Polygon {
   }
 
   void setFile(String filePath) { //tell the polygon what file is associated with it
-//file drop handler code
-// for OSC implementation, poly should send the string of the filepath on its channel
+    //file drop handler code
+    // for OSC implementation, poly should send the string of the filepath on its channel
   }
 
 
@@ -44,14 +44,15 @@ class Poly extends java.awt.Polygon {
   }
 
   void trigger() { // generic method to work on Greg's play logic
-    println("triggered "+this.getIndex());
+    sendOSC("Movement in "+this.getIndex());
     emptyFrames=frameCount; // reset our motion counter
   }  // end of poly.trigger()
 
   void noAction() {
 
-    if (abs(frameCount-emptyFrames)>relaxThreshold) { // if we're inactive for relaxThreshold frames, do something
+    if (abs(frameCount-emptyFrames)>frameRate*secondsToWait) { // if we're inactive for relaxThreshold frames, do something
       // do stuff once the noAction threshold has been reached
+      sendOSC("no Action in "+this.getIndex());
       println("triggered noAction in "+this.getIndex());
       emptyFrames=frameCount; // reset our motion counter after we've done something to force us to wait relaxThreshold more seconds till we repeat
     }
@@ -71,5 +72,13 @@ class Poly extends java.awt.Polygon {
       dl.draw();
     }
   } // end of poly.drawMe();
+
+  void sendOSC(String msg) { // clone this function for any other datatypes you want to send
+    /* in the following different ways of creating osc messages are shown by example */
+    OscMessage myMessage = new OscMessage("/"+this.getIndex());
+    myMessage.add(msg); /* add a string to the osc message */
+    /* send the message */
+    oscP5.send(myMessage, myRemoteLocation);
+  }
 } // end of Poly class
 
