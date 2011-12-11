@@ -59,6 +59,7 @@ class Poly extends java.awt.Polygon {
   } // end of poly.noAction()
 
   void drawMe() {
+    
     beginShape();
     if (isActive) {
       fill(255, 0, 0, 64);
@@ -71,11 +72,15 @@ class Poly extends java.awt.Polygon {
     if (dl!=null) {
       dl.draw();
     }
+    if(inputs[2]==1){
+      fill(255,0,0,128);
+      text(this.getIndex(),xpoints[0],ypoints[0]);
+    }
   } // end of poly.drawMe();
 
   void sendOSC(String msg) { // clone this function for any other datatypes you want to send
     /* in the following different ways of creating osc messages are shown by example */
-    OscMessage myMessage = new OscMessage("/"+this.getIndex());
+    OscMessage myMessage = new OscMessage("/"+this.getIndex());  // send on a separate channel for each polygon
     myMessage.add(msg); /* add a string to the osc message */
     /* send the message */
     oscP5.send(myMessage, myRemoteLocation);

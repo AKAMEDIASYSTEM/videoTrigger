@@ -5,6 +5,7 @@ import ddf.minim.effects.*;
 import sojamo.drop.*;
 import controlP5.*;
 import processing.video.*;
+PFont fontA;
 /*
 this is supposed to:
  
@@ -34,7 +35,7 @@ int[] backgroundPixels;
 
 
 
-public int[] inputs = new int[2];
+public int[] inputs = new int[3];
 public int controlBackground = color(0x97FFFF);
 public int controlFont = color(0xFF8888);
 public boolean isNewPoly = true;
@@ -71,6 +72,9 @@ void setup()
   checkbox.setColorLabel(controlFont);
   checkbox.addItem("Draw", 0);
   checkbox.addItem("Analyze", 1);
+  checkbox.addItem("Show Labels", 2);
+  fontA = loadFont("OCRAStd-32.vlw");
+  textFont(fontA, 32);
 
   // containers setup
   polygons = new ArrayList();
@@ -155,7 +159,7 @@ void draw() {
     for (int i=0; i<polygons.size(); i++) {
       Poly eachPoly = new Poly();
       eachPoly = (Poly)polygons.get(i);
-eachPoly.drawMe();
+      eachPoly.drawMe();
       if (eachPoly.isActive) {
         if (inputs[1]==1) {
           eachPoly.trigger();
@@ -167,7 +171,6 @@ eachPoly.drawMe();
           eachPoly.noAction();
         }
       }
-      
     }
 
     // draw stuff

@@ -4,13 +4,14 @@ import controlP5.*;
 import processing.video.*;
 import oscP5.*;
 import netP5.*;
+
 /*
 This is a generic script that lets the user:
-
-* Draw polygonal regions over a video image
-* When there is motion detected inside any region, fire an OSC message until motion stops
-* Define a threshold time after which a "noAction" event will fire, signifying tha tthe region has settled down
-
+ 
+ * Draw polygonal regions over a video image
+ * When there is motion detected inside any region, fire an OSC message until motion stops
+ * Define a threshold time after which a "noAction" event will fire, signifying tha tthe region has settled down
+ 
  */
 
 ControlP5 controlP5;
@@ -19,10 +20,11 @@ Capture video;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 SDrop drop;
+PFont fontA;
 
 public int numPixels;
 int[] backgroundPixels;
-public int[] inputs = new int[2];
+public int[] inputs = new int[3];
 public int controlBackground = color(0x97FFFF);
 public int controlFont = color(0xFF8888);
 public boolean isNewPoly = true;
@@ -52,14 +54,17 @@ void setup()
   checkbox.setColorLabel(controlFont);
   checkbox.addItem("Draw", 0);
   checkbox.addItem("Analyze", 1);
+  checkbox.addItem("Show Labels", 2);
+  fontA = loadFont("LiSongPro-32.vlw");
+  textFont(fontA, 32);
 
   // containers setup
   polygons = new ArrayList();
   drop = new SDrop(this);
-  
+
   // OSC setup
-    oscP5 = new OscP5(this,12000);
-    /* myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
+  oscP5 = new OscP5(this,12000);
+  /* myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
    * an ip address and a port number. myRemoteLocation is used as parameter in
    * oscP5.send() when sending osc packets to another computer, device, 
    * application. usage see below. for testing purposes the listening port
@@ -226,9 +231,7 @@ void oscEvent(OscMessage theOscMessage) {
   print("### received an osc message.");
   print(" addrpattern: "+theOscMessage.addrPattern());
   println(" typetag: "+theOscMessage.typetag());
-  //if(theOscMessage.typetag()=="s"){
-   println(theOscMessage.get(0).stringValue());
-  //}
+  //println(theOscMessage.get(0).stringValue());
 }
 
 void stop() {

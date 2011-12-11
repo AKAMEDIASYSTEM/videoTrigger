@@ -130,6 +130,10 @@ class Poly extends java.awt.Polygon {
     if (dl!=null) {
       dl.draw();
     }
+    if(inputs[2]==1) {
+      fill(255,0,0,128);
+      text(this.getIndex(),xpoints[0],ypoints[0]);
+    }
   } // end of poly.drawMe();
 } // end of Poly class
 
