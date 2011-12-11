@@ -32,6 +32,7 @@ public class gregVid_v12 extends PApplet {
 
 
 
+PFont fontA;
 /*
 this is supposed to:
  
@@ -61,7 +62,7 @@ int[] backgroundPixels;
 
 
 
-public int[] inputs = new int[2];
+public int[] inputs = new int[3];
 public int controlBackground = color(0x97FFFF);
 public int controlFont = color(0xFF8888);
 public boolean isNewPoly = true;
@@ -98,6 +99,9 @@ public void setup()
   checkbox.setColorLabel(controlFont);
   checkbox.addItem("Draw", 0);
   checkbox.addItem("Analyze", 1);
+  checkbox.addItem("Show Labels", 2);
+  fontA = loadFont("OCRAStd-32.vlw");
+  textFont(fontA, 32);
 
   // containers setup
   polygons = new ArrayList();
@@ -182,7 +186,7 @@ public void draw() {
     for (int i=0; i<polygons.size(); i++) {
       Poly eachPoly = new Poly();
       eachPoly = (Poly)polygons.get(i);
-eachPoly.drawMe();
+      eachPoly.drawMe();
       if (eachPoly.isActive) {
         if (inputs[1]==1) {
           eachPoly.trigger();
@@ -194,7 +198,6 @@ eachPoly.drawMe();
           eachPoly.noAction();
         }
       }
-      
     }
 
     // draw stuff
@@ -396,20 +399,6 @@ public void mouseMoved() {
   if(inputs[0]==1) { // if we're in Draw mode, show polygon origins
     // OR: do we just show the current polygon's origin? Might be faster...
     fill(255,0,0,128);
-    //    if(!polygons.isEmpty()) {
-    //      for (int i=0; i<polygons.size(); i++) {
-    //        Poly eachPoly = new Poly();
-    //        eachPoly = (Poly)polygons.get(i);
-    //        ellipse(eachPoly.xpoints[0],eachPoly.ypoints[0],5,5);
-    //      }
-    //    }
-    //    if(!polygons.isEmpty()) {
-    //      Poly eachPoly = new Poly();
-    //      eachPoly = (Poly)polygons.get(polygons.size()-1);
-    //      if(dist(eachPoly.xpoints[0],eachPoly.ypoints[0],mouseX,mouseY)<=pointThreshold) {
-    //        ellipse(eachPoly.xpoints[0],eachPoly.ypoints[0],pointThreshold*2,pointThreshold*2);  // draw circle at origin
-    //      }
-    //    }
   }
 } // end of mouseMoved()
 
@@ -544,6 +533,10 @@ class Poly extends java.awt.Polygon {
     endShape(CLOSE);
     if (dl!=null) {
       dl.draw();
+    }
+    if(inputs[2]==1) {
+      fill(255,0,0,128);
+      text(this.getIndex(),xpoints[0],ypoints[0]);
     }
   } // end of poly.drawMe();
 } // end of Poly class
