@@ -4,15 +4,6 @@ class MyDropListener extends DropListener {
   int myColor;
   float[] polyOrigin = new float[2];
 
-  //  MyDropListener(Poly p) {
-  //    myColor = color(255);
-  //    polyOrigin[0] = p.xpoints[0];
-  //    polyOrigin[1] = p.ypoints[0];
-  //    println(polyOrigin[0]+", "+polyOrigin[1]);
-  //    // set a target rect for drop event.
-  //    setTargetRect(polyOrigin[0],polyOrigin[1],polyOrigin[0]+20,polyOrigin[1]+20);
-  //  }
-
   MyDropListener(float x, float y,int thePolygonIndex) {
     this.polygonIndex = thePolygonIndex;
     myColor = color(255,128);
